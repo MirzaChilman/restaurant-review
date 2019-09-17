@@ -31,3 +31,25 @@
     transform: rotate(360deg);
   }
 }
+
+.mapContainer {
+  display: flex !important;
+}
+
+.mapContainer > div:nth-child(1) {
+  position: relative !important;
+}
+
+.mapContainer > div:nth-child > * {
+  position: relative !important;
+}
+
+.mapContainer > div:nth-child(2) {
+  background-color: red;
+  width: 50%;
+}
+
+.something {
+  max-height: 100vh;
+  overflow: scroll;
+}
