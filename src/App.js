@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import localRestaurant from "./localRestaurant";
-import { Map, InfoWindow, Marker, GoogleApiWrapper } from "google-maps-react";
+import { Map, Marker, GoogleApiWrapper } from "google-maps-react";
 import RestaurantCard from "./RestaurantCard";
-import Axios from "axios";
+import InfoWindow from "./InfoWindow";
+import CreateModal from './CreateModal'
 import "./App.css";
-
-const apiKey = "AIzaSyDFjB3G4gf-SuD7ho1tYDj8nBwCzoDR22I";
+const apiKey = "AIzaSyDp4uinjRq9TTg4OmXPXwILUJGd1Piq2Wg";
+// const apiKey = "AIzaSyAUS6L9Avy1Bvz8ERQokJn9Tm8lY_xhZ-0";
 
 class App extends Component {
   state = {
@@ -13,21 +14,16 @@ class App extends Component {
       lat: 0,
       lng: 0,
     },
-    locations: [
-      { lat: -33.890542, long: 151.274856, zoom: 4, name: "Bondi" },
-      { lat: -33.790542, long: 151.274856, zoom: 4, name: "Necha" },
-    ],
     googleLocations: [],
-  };
-  static defaultProps = {
-    center: {
-      lat: -7.7833528,
-      lng: 110.4343039,
-    },
-    zoom: 14,
+    selectedPlace: {},
+    activeMarker: {},
+    showingInfoWindow: false,
+    isCreateModalOpen: false
   };
 
-  myMapRef = React.createRef();
+  async componentDidMount() {
+    await this.getInitialLocation();
+  }
 
   getInitialLocation = () => {
     if (navigator.geolocation) {
@@ -47,122 +43,186 @@ class App extends Component {
     }
   };
 
-  async componentDidMount() {
-    await this.getInitialLocation();
-  }
-
-  callback = (result, status) => {
-    this.setState({
-      googleLocations: result,
+  fetchPlaceStreetView = (location, mapProps) => {
+    const { google } = mapProps;
+    const request = {
+      location
+    };
+    const service = new google.maps.StreetViewService().getPanorama(request, (result, status) => {
+      console.log(result)
+      console.log(status)
     });
-    console.log(result);
-    console.log(status);
+  };
+
+  fetchPlaceDetails = (service, places, mapProps) => {
+    places.map(datum => {
+      const request = {
+        placeId: datum.place_id,
+      };
+      service.getDetails(request, (result, status) => {
+        console.log(result)
+        console.log(status)
+        if (status.toLowerCase() === "ok") {
+          // console.log(result.geometry.location.lat())
+          const location = result.geometry.location
+          this.fetchPlaceStreetView(location,mapProps);
+          this.setState(prevState => ({
+            ...prevState,
+            googleLocations: [...prevState.googleLocations, result],
+          }));
+        }
+      });
+    });
   };
 
   fetchPlaces = async (mapProps, map) => {
     const { google } = mapProps;
     const service = new google.maps.places.PlacesService(map);
-    this.setState({});
     const mapLocation = map.center;
     const request = {
       location: mapLocation,
-      radius: 1000,
+      radius: 50,
       types: ["restaurant"],
     };
-    return await service.nearbySearch(request, this.callback);
+    await service.nearbySearch(request, async (result, status) => {
+      if (status.toLowerCase() === "ok") {
+        console.log(result)
+        this.fetchPlaceDetails(service, result, mapProps);
+      }
+    });
   };
 
-  mapClicked(mapProps, map, clickEvent) {
+  handleModalOpen = () => {
+    this.setState({
+      isCreateModal: true
+    })
+  }
+
+  handleModalClose = () => {
+    this.setState({
+      isCreateModal: false
+    })
+  }
+
+  mapClicked = (mapProps, map, clickEvent) => {
     // ...
     console.log(clickEvent);
     console.log(mapProps);
     console.log(map);
+    this.handleModalOpen()
   }
 
-  onMarkerClick(mapProps, marker, e) {
-    // ..
+  onMarkerClick = (mapProps, marker, e) => {
     console.log(mapProps);
-    console.log(marker);
-    console.log(e);
-  }
-
-  onMouseoverMarker(mapProps, marker, e) {
-    // ..
-    console.log(mapProps);
-    console.log(marker);
-    console.log(e);
-  }
+    this.setState({
+      selectedPlace: mapProps,
+      activeMarker: marker,
+      showingInfoWindow: true,
+    });
+  };
 
   renderLoading = () => <h1>Loading</h1>;
 
+  renderLocalRestaurant = () => {
+    return localRestaurant.map(location => {
+      return (
+        <Marker
+          title={location.restaurantName}
+          name={location.restaurantName}
+          position={{ lat: location.lat, lng: location.long }}
+          onClick={this.onMarkerClick}
+        />
+      );
+    });
+  };
+
+  renderGoogleRestaurant = () => {
+    const { googleLocations } = this.state;
+    return googleLocations.map(location => {
+      const lat = location.geometry.location.lat();
+      const lng = location.geometry.location.lng();
+      return (
+        <Marker
+          title={location.name}
+          name={location.name}
+          position={{ lat, lng }}
+          onClick={this.onMarkerClick}
+        />
+      );
+    });
+  };
+
   renderMap = () => {
     const { googleLocations } = this.state;
+    console.log(this.state.initialLocation)
     return (
       <Map
         google={this.props.google}
         name={"Current Location"}
         initialCenter={{
-          lat: this.state.initialLocation.lat,
-          lng: this.state.initialLocation.lng,
+          // lat: this.state.initialLocation.lat,
+          lat: -7.7639612,
+          // lng: this.state.initialLocation.lng,
+          lng: 110.390341,
         }}
-        ref={this.myMapRef}
+        zoom={15}
         style={{ height: "100vh", width: "100%" }}
         onReady={this.fetchPlaces}
         onClick={this.mapClicked}
       >
-        {localRestaurant.map(location => {
-          return (
-            <Marker
-              title={location.restaurantName}
-              name={location.restaurantName}
-              position={{ lat: location.lat, lng: location.long }}
-              onClick={this.onMarkerClick}
-              onMouseover={this.onMouseoverMarker}
-            />
-          );
-        })}
+        {this.renderLocalRestaurant()}
         {googleLocations &&
           googleLocations.length > 0 &&
-          googleLocations.map(location => {
-            const lat = location.geometry.location.lat();
-            const lng = location.geometry.location.lng();
-            return (
-              <Marker
-                title={location.name}
-                name={location.name}
-                position={{ lat, lng }}
-                onClick={this.onMarkerClick}
-                onMouseover={this.onMouseoverMarker}
-              />
-            );
-          })}
+          this.renderGoogleRestaurant()}
+        <InfoWindow
+          marker={this.state.activeMarker}
+          visible={this.state.showingInfoWindow}
+        >
+          <div>
+            <h5>{this.state.selectedPlace.name}</h5>
+          </div>
+        </InfoWindow>
       </Map>
     );
   };
 
   renderMenuRightBar = () => {
+    const { googleLocations } = this.state;
     return (
-      <div className={"something"}>
+      <div className={"right-bar"}>
         {localRestaurant.map(restaurant => {
           return <RestaurantCard {...restaurant} />;
         })}
+        {googleLocations &&
+          googleLocations.length > 0 &&
+          googleLocations.map(location => {
+            return <RestaurantCard {...location} />;
+          })}
       </div>
     );
   };
 
   render() {
-    console.log(this.myMapRef);
     const { lat, lng } = this.state.initialLocation;
+    console.log(this.state.googleLocations)
     const initialLocationHasNotLoaded = lat === 0 && lng === 0;
     return (
       <div className={"mapContainer"}>
         {initialLocationHasNotLoaded ? this.renderLoading() : this.renderMap()}
         {this.renderMenuRightBar()}
+        {this.state.isCreateModal && <CreateModal open={this.handleModalOpen} close={this.handleModalClose}/>}
       </div>
     );
   }
 }
 
+const LoadingKeren = () => {
+  return (
+      <h1>LOADING ANJING</h1>
+  )
+}
+
 export default GoogleApiWrapper({
   apiKey: apiKey,
+  LoadingContainer: LoadingKeren
 })(App);

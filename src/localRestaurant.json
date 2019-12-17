@@ -1,36 +1,37 @@
 [
   {
-    "restaurantName": "Bronco",
-    "address": "39 Rue des Petites Écuries, 75010 Paris",
+    "name": "Bronco",
+    "formatted_address": "39 Rue des Petites Écuries, 75010 Paris",
     "lat": -7.7833528,
     "long": 110.4343039,
-    "ratings": [
+    "photos": [],
+    "image": "https://images.unsplash.com/photo-1556742205-e10c9486e506?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80",
+    "user_ratings_total": 125,
+    "reviews": [
       {
-        "stars": 4,
-        "comment": "Great! But not many veggie options."
-      },
-      {
-        "stars": 5,
-        "comment": "My favorite restaurant!"
+        "author_name": "Li Shi Jia",
+        "author_url": "URL",
+        "profile_photo_url": "https://storage.googleapis.com/aivision-app.appspot.com/kreativ%2Fteams%2Fguest%2Fgallery%2F264720fee715ad3115af9ab41aa82fb3.jpg.previewWithWatermark.png?GoogleAccessId=aivision-app%40appspot.gserviceaccount.com&Expires=16447017600&Signature=BGDo5IBYaY3lMimZDur6%2F80DtdKWYgA9fWJEDaIIwWrCt9vLxYusZexnrmKJrKzUi6%2Bw8UFArj10PoaM92h6HlLXfc07lJq8%2FAHuEHyCGisGaL0mXIE7O8vg%2B3vVxlRXgLwAqk7neAwTVwmiToNeJ2zANzNLxT8ArHGjeNuk4NHsOMfXmmP0JR2MhMb56ejUdlFbiidbOVaVN%2BwBPludoNrZPzDeCGxY2c%2F1G35E4v03BaQWr138A6DOFieLEAGUms7lGqYkQpHrNYOW1q4aEMcbYzDoh08rLXpHx8naYjTVc0ZJSwchg7%2BFx1KazzUZLyeAP81HwclZDHJ5zKX7Tw%3D%3D",
+        "text": "The first local review",
+        "rating": 4
       }
-    ],
-    "image": "https://images.unsplash.com/photo-1556742205-e10c9486e506?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80"
+    ]
   },
   {
-    "restaurantName": "Babalou",
-    "address": "4 Rue Lamarck, 75018 Paris",
+    "name": "Babalou",
+    "formatted_address": "4 Rue Lamarck, 75018 Paris",
     "lat": -7.7833528,
     "long": 110.3943039,
-    "ratings": [
+    "image": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80",
+    "user_ratings_total": 50,
+    "reviews": [
       {
-        "stars": 5,
-        "comment": "Tiny pizzeria next to Sacre Coeur!"
-      },
-      {
-        "stars": 3,
-        "comment": "Meh, it was fine."
+        "author_name": "Ming Fleet foot",
+        "author_url": "URL",
+        "profile_photo_url": "https://storage.googleapis.com/aivision-app.appspot.com/kreativ%2Fteams%2Fguest%2Fgallery%2Fbd8b7fcb64235d74b1727d93b15b347a.jpg.previewWithWatermark.png?GoogleAccessId=aivision-app%40appspot.gserviceaccount.com&Expires=16447017600&Signature=t4omJdyqk8ckvgpeyepet7kmrcTapvoS8j1eiZ5T2BjsfNM0hZo%2B1QW82NDUiEUMpaTWk6qFp8eyuvBdN4p6NMQJEPnowyFkh%2FDy3RLzQvaUi9s8m3zWhCedqpcTDMroyBFTUCTsAMXciKKkmRwrimySUbbW0xF3Ngj%2Br94ZeUFv%2Fbjzmf1mF%2FE%2BLkaEfL7eIH6OuyVRGBhqSTo1Nib%2F2kH%2Btxp5Ypo9hh2k3T0u1ElEB%2BwLcHmm9jqbg%2Fngx3IVa71P%2FHb2%2Fh%2BGdGENf8oL1eX6vvOwmAblKndADyR5bn%2FYYdn8roeqzTHS7cTj84AlvkvgZNKP%2Fy4gGnYKNryBAA%3D%3D",
+        "text": "The second local reviews",
+        "rating": 4
       }
-    ],
-    "image": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80"
+    ]
   }
 ]

@@ -45,11 +45,10 @@
 }
 
 .mapContainer > div:nth-child(2) {
-  background-color: red;
   width: 50%;
 }
 
-.something {
+.right-bar {
   max-height: 100vh;
   overflow: scroll;
 }

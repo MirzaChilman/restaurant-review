@@ -13,10 +13,20 @@ import Typography from "@material-ui/core/Typography";
 import { red } from "@material-ui/core/colors";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import StarRatingComponent from "react-star-rating-component";
+import Paper from "@material-ui/core/Paper";
+import Icon from "@material-ui/core/Icon";
+import Grid from "@material-ui/core/Grid";
+import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
+const defaultImage = "http://alcantarastone.com/media/img/no_image.png";
 
 const useStyles = makeStyles(theme => ({
   card: {
     maxWidth: "100%",
+    margin: "0 0 5px 0",
+    background: "white",
+    // background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
+    boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
   },
   media: {
     height: 0,
@@ -35,12 +45,25 @@ const useStyles = makeStyles(theme => ({
   avatar: {
     backgroundColor: red[500],
   },
+  paper: {
+    padding: theme.spacing(3, 2),
+    margin: theme.spacing(2, 2),
+    background: "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
+    boxShadow: "0 3px 5px 2px rgba(33, 203, 243, .3)",
+  },
+  typography: {
+    color: "black",
+  },
 }));
-
 export default function RecipeReviewCard(props) {
   const classes = useStyles();
+  const { name, formatted_address, reviews } = props;
+
+  const restaurantImage =
+    (props.image && props.image) ||
+    (props.photos && props.photos.length > 0 && props.photos[0].getUrl());
+
   const [expanded, setExpanded] = React.useState(false);
-  const { restaurantName, address, ratings, image } = props;
 
   function handleExpandClick() {
     setExpanded(!expanded);
@@ -49,9 +72,10 @@ export default function RecipeReviewCard(props) {
   return (
     <Card className={classes.card}>
       <CardHeader
+        className={classes.cardHeader}
         avatar={
           <Avatar aria-label="recipe" className={classes.avatar}>
-            R
+            {name ? name.substring(0, 2) : "RT"}
           </Avatar>
         }
         action={
@@ -59,38 +83,68 @@ export default function RecipeReviewCard(props) {
             <MoreVertIcon />
           </IconButton>
         }
-        title={restaurantName}
-        subheader={address}
+        title={name && name}
+        subheader={
+          formatted_address
+            ? formatted_address
+            : "This restaurant does not have exact address"
+        }
       />
-      <CardMedia className={classes.media} image={image} title="Paella dish" />
+      <CardMedia
+        className={classes.media}
+        image={restaurantImage || defaultImage}
+        title={name && name}
+      />
       {/*<CardContent>*/}
       {/*  <Typography variant="body2" color="textSecondary" component="p">*/}
       {/*    {address}*/}
       {/*  </Typography>*/}
       {/*</CardContent>*/}
-      <CardActions disableSpacing>
+      <CardActions>
         <IconButton
-          className={clsx(classes.expand, {
-            [classes.expandOpen]: expanded,
-          })}
+          // className={clsx(classes.expand, {
+          //   [classes.expandOpen]: expanded,
+          // })}
           onClick={handleExpandClick}
           aria-expanded={expanded}
           aria-label="show more"
         >
           <ExpandMoreIcon />
         </IconButton>
+        <small>Read More</small>
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          {ratings &&
-            ratings.map(rating => {
-              return (
-                <>
-                  <Typography paragraph>Stars:{rating.stars}</Typography>
-                  <Typography paragraph>{rating.comment}</Typography>
-                </>
-              );
-            })}
+          {reviews
+            ? reviews.map(rating => {
+                return (
+                  <Paper className={classes.paper} elevation={5}>
+                    {rating.profile_photo_url && (
+                      <Avatar
+                        classes={classes.avatar}
+                        alt={rating.author_name}
+                        src={rating.profile_photo_url}
+                      />
+                    )}
+
+                    <StarRatingComponent
+                      starCount={5}
+                      name={"rating"}
+                      value={rating.stars || rating.rating}
+                    />
+                    <Typography className={classes.typography} paragraph>
+                      {rating.comment || rating.text}
+                    </Typography>
+                    <Typography
+                      className={classes.typography}
+                      variant="subtitle2"
+                    >
+                      {rating.name || rating.author_name}
+                    </Typography>
+                  </Paper>
+                );
+              })
+            : "This restaurant does not have any reviews"}
         </CardContent>
       </Collapse>
     </Card>
