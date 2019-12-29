@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import Card from "@material-ui/core/Card";
@@ -18,6 +18,10 @@ import Paper from "@material-ui/core/Paper";
 import Icon from "@material-ui/core/Icon";
 import Grid from "@material-ui/core/Grid";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
+import Button from "@material-ui/core/Button";
+import Input from "@material-ui/core/Input";
+import InputLabel from "@material-ui/core/InputLabel";
+
 const defaultImage = "http://alcantarastone.com/media/img/no_image.png";
 
 const useStyles = makeStyles(theme => ({
@@ -54,21 +58,103 @@ const useStyles = makeStyles(theme => ({
   typography: {
     color: "black",
   },
+  input: {
+    margin: theme.spacing(2.5, 0),
+  },
+  reviewCard: {
+    padding: theme.spacing(2.5, 2.5),
+    backgroundColor: "#98a7ff",
+  },
 }));
 export default function RecipeReviewCard(props) {
   const classes = useStyles();
   const { name, formatted_address, reviews } = props;
+  const [reviewer, setReviewer] = useState("");
+  const [description, setDescription] = useState("");
+  const [rating, setRating] = useState(0);
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const [addedReview, setAddedReview] = useState([]);
 
   const restaurantImage =
     (props.image && props.image) ||
     (props.photos && props.photos.length > 0 && props.photos[0].getUrl());
 
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   function handleExpandClick() {
     setExpanded(!expanded);
   }
 
+  const onSubmitReview = () => {
+    setAddedReview(prevState => [
+      ...prevState,
+      { reviewer, description, rating },
+    ]);
+    setIsReviewOpen(false);
+  };
+
+  const renderReviewInput = () => {
+    return (
+      <Card className={classes.reviewCard}>
+        <InputLabel htmlFor="reviewer">Name Reviewer</InputLabel>
+        <Input
+          value={reviewer}
+          onChange={event => {
+            const { value } = event.target;
+            setReviewer(value);
+          }}
+          placeholder="Reviewer Name"
+          id="reviewer"
+          className={classes.input}
+        />
+        <InputLabel htmlFor="description">Description</InputLabel>
+        <Input
+          value={description}
+          onChange={event => {
+            const { value } = event.target;
+            setDescription(value);
+          }}
+          placeholder="Description"
+          id="description"
+          className={classes.input}
+        />
+        <InputLabel htmlFor="rating">Rating</InputLabel>
+        <Input
+          type="number"
+          inputProps={{ min: "0", max: "5", step: "1" }}
+          value={rating}
+          onChange={event => {
+            const { value } = event.target;
+            setRating(value);
+          }}
+          placeholder="Rating"
+          id="rating"
+          className={classes.input}
+        />
+        <div>
+          <Button variant="contained" color="primary" onClick={onSubmitReview}>
+            Submit Review
+          </Button>
+        </div>
+      </Card>
+    );
+  };
+
+  const renderReviewButton = () => {
+    return !isReviewOpen ? (
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => {
+          setIsReviewOpen(true);
+        }}
+      >
+        Add Review
+      </Button>
+    ) : (
+      ""
+    );
+  };
   return (
     <Card className={classes.card}>
       <CardHeader
@@ -95,16 +181,8 @@ export default function RecipeReviewCard(props) {
         image={restaurantImage || defaultImage}
         title={name && name}
       />
-      {/*<CardContent>*/}
-      {/*  <Typography variant="body2" color="textSecondary" component="p">*/}
-      {/*    {address}*/}
-      {/*  </Typography>*/}
-      {/*</CardContent>*/}
       <CardActions>
         <IconButton
-          // className={clsx(classes.expand, {
-          //   [classes.expandOpen]: expanded,
-          // })}
           onClick={handleExpandClick}
           aria-expanded={expanded}
           aria-label="show more"
@@ -115,36 +193,61 @@ export default function RecipeReviewCard(props) {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          {reviews
-            ? reviews.map(rating => {
-                return (
-                  <Paper className={classes.paper} elevation={5}>
-                    {rating.profile_photo_url && (
-                      <Avatar
-                        classes={classes.avatar}
-                        alt={rating.author_name}
-                        src={rating.profile_photo_url}
-                      />
-                    )}
-
-                    <StarRatingComponent
-                      starCount={5}
-                      name={"rating"}
-                      value={rating.stars || rating.rating}
+          {renderReviewButton()}
+          {isReviewOpen && renderReviewInput()}
+          {reviews &&
+            reviews.map(rating => {
+              return (
+                <Paper className={classes.paper} elevation={5}>
+                  {rating.profile_photo_url && (
+                    <Avatar
+                      classes={classes.avatar}
+                      alt={rating.author_name}
+                      src={rating.profile_photo_url}
                     />
-                    <Typography className={classes.typography} paragraph>
-                      {rating.comment || rating.text}
-                    </Typography>
-                    <Typography
-                      className={classes.typography}
-                      variant="subtitle2"
-                    >
-                      {rating.name || rating.author_name}
-                    </Typography>
-                  </Paper>
-                );
-              })
-            : "This restaurant does not have any reviews"}
+                  )}
+
+                  <StarRatingComponent
+                    starCount={5}
+                    name={"rating"}
+                    value={rating.stars || rating.rating}
+                  />
+                  <Typography className={classes.typography} paragraph>
+                    {rating.comment || rating.text}
+                  </Typography>
+                  <Typography
+                    className={classes.typography}
+                    variant="subtitle2"
+                  >
+                    {rating.name || rating.author_name}
+                  </Typography>
+                </Paper>
+              );
+            })}
+
+          {addedReview.length > 0 &&
+            addedReview.map(review => {
+              return (
+                <Paper className={classes.paper} elevation={5}>
+                  <StarRatingComponent
+                    starCount={5}
+                    name={"rating"}
+                    value={review.rating}
+                  />
+                  <Typography className={classes.typography} paragraph>
+                    {review.description}
+                  </Typography>
+                  <Typography
+                    className={classes.typography}
+                    variant="subtitle2"
+                  >
+                    {review.reviewer}
+                  </Typography>
+                </Paper>
+              );
+            })}
+
+          {!reviews && addedReview.length === 0 && <p>There is no review</p>}
         </CardContent>
       </Collapse>
     </Card>
