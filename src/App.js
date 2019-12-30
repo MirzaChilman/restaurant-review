@@ -5,8 +5,6 @@ import RestaurantCard from "./RestaurantCard";
 import InfoWindow from "./InfoWindow";
 import CreateModal from "./CreateModal";
 import "./App.css";
-// const apiKey = "AIzaSyDp4uinjRq9TTg4OmXPXwILUJGd1Piq2Wg";
-const apiKey = "AIzaSyC4f9NH1rhp3dHrj86B1tK3V1TVqb20J68";
 
 class App extends Component {
   state = {
