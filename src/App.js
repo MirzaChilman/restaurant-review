@@ -28,6 +28,29 @@ class App extends Component {
 
   mapRef = React.createRef();
 
+  componentDidMount() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          this.setState({
+            initialLocation: {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            },
+          });
+        },
+        function() {
+          throw Error("You need to allow position");
+        }
+      );
+    } else {
+      // Browser doesn't support Geolocation
+      throw Error(
+        "Your browser does not support geolocation, we recommend to switch to chrome "
+      );
+    }
+  }
+
   handleModalOpen = () => {
     this.setState({
       isCreateModal: true,
@@ -36,7 +59,7 @@ class App extends Component {
 
   handleModalClose = () => {
     this.setState({
-      isCreateModal: false,
+      isCreateModalOpen: false,
     });
   };
 
@@ -144,6 +167,7 @@ class App extends Component {
       newRestaurant,
       googlePlaces,
       fetchingGooglePlaces,
+      localRestaurant,
     } = this.state;
     return (
       <div className="mapContainer">
@@ -183,6 +207,20 @@ class App extends Component {
                   position={{
                     lat: place.geometry.location.lat(),
                     lng: place.geometry.location.lng(),
+                  }}
+                  onClick={this.onMarkerClick}
+                />
+              );
+            })}
+          {localRestaurant.length > 0 &&
+            localRestaurant.map(restaurant => {
+              return (
+                <Marker
+                  title={`${restaurant.name}\n${restaurant.formatted_address}`}
+                  name={restaurant.name}
+                  position={{
+                    lat: restaurant.lat,
+                    lng: restaurant.long,
                   }}
                   onClick={this.onMarkerClick}
                 />

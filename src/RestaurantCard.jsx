@@ -85,12 +85,12 @@ export default function RestaurantCard(props) {
     rating,
     user_ratings_total,
   } = props;
-  console.log(props);
   const [addedReview, setAddedReview] = useState([]);
   const [expanded, setExpanded] = useState(false);
-
-  const restaurantImage =
-    props.photos && props.photos.length > 0 && props.photos[0].getUrl();
+  //
+  // const restaurantImage =
+  //   props.images ||
+  //   (props.photos && props.photos.length > 0 && props.photos[0].getUrl());
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -127,13 +127,17 @@ export default function RestaurantCard(props) {
         {props.geometry && props.geometry.location && (
           <Panorama place={props.geometry.location} google={googleServices} />
         )}
-        {!props.geometry && (
-          <CardMedia
-            className={restaurantImage ? classes.media : classes.noMedia}
-            image={restaurantImage || defaultImage}
-            title={name && name}
+        {!props.geometry && props.lat && props.long && (
+          <Panorama
+            place={{ lat: props.lat, lng: props.long }}
+            google={googleServices}
           />
         )}
+        {/*<CardMedia*/}
+        {/*    className={restaurantImage ? classes.media : classes.noMedia}*/}
+        {/*    image={restaurantImage || props.image}*/}
+        {/*    title={name && name}*/}
+        {/*/>*/}
         <Paper className={classes.paperSecondary}>
           {rating ? (
             <p>

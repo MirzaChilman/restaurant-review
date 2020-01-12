@@ -5,7 +5,7 @@ import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-
+import CancelRoundedIcon from "@material-ui/icons/CancelRounded";
 const useStyles = makeStyles(theme => ({
   modal: {
     display: "flex",
@@ -53,7 +53,13 @@ export default function CreateModal(props) {
       >
         <Fade in={props.open}>
           <div className={classes.paper}>
-            <p>Add new Restaurants</p>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <p>Add new Restaurants</p>
+              <CancelRoundedIcon
+                onClick={props.close}
+                style={{ marginTop: "5px" }}
+              />
+            </div>
             <div>
               <TextField
                 label="Restaurant Name"
@@ -69,6 +75,7 @@ export default function CreateModal(props) {
               variant="contained"
               color="primary"
               onClick={() => onAddRestaurant({ restaurantName })}
+              disabled={!restaurantName}
             >
               Add Restaurant
             </Button>
