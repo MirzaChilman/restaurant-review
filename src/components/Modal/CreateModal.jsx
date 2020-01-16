@@ -6,6 +6,7 @@ import Fade from "@material-ui/core/Fade";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import CancelRoundedIcon from "@material-ui/icons/CancelRounded";
+
 const useStyles = makeStyles(theme => ({
   modal: {
     display: "flex",
